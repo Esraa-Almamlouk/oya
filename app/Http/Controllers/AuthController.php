@@ -17,7 +17,7 @@ class AuthController extends Controller
     public function login(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
-            'username' => ['required', 'string'],
+            'email' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
 
@@ -29,9 +29,8 @@ class AuthController extends Controller
 
         return back()
             ->withErrors([
-                'username' => 'Invalid username or password.',
-            ])
-            ->onlyInput('username');
+            'error' => 'البريد الالكتروني او كلمة المرور غير صحيحة !',
+            ]);
     }
 
     public function dashboard(): View

@@ -1,100 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f4f7;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+@php
+$customizerHidden = 'customizer-hide';
+@endphp
 
-        .card {
-            width: 100%;
-            max-width: 360px;
-            background: #fff;
-            border-radius: 8px;
-            padding: 24px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        }
+@extends('layouts/blankLayout')
 
-        h1 {
-            margin: 0 0 16px;
-            font-size: 22px;
-        }
+@section('title', 'تسجيل الدخول')
 
-        label {
-            display: block;
-            margin: 12px 0 6px;
-            font-size: 14px;
-        }
+@section('vendor-style')
+    @vite([
+    'resources/assets/vendor/libs/@form-validation/form-validation.scss'
+])
+@endsection
 
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d0d5dd;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
+@section('page-style')
+    @vite([
+    'resources/assets/vendor/scss/pages/page-auth.scss'
+])
+@endsection
 
-        .checkbox {
-            margin-top: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-        }
+@section('vendor-script')
+    @vite([
+    'resources/assets/vendor/libs/@form-validation/popular.js',
+    'resources/assets/vendor/libs/@form-validation/bootstrap5.js',
+    'resources/assets/vendor/libs/@form-validation/auto-focus.js'
+])
+@endsection
 
-        .error {
-            margin-top: 10px;
-            color: #b42318;
-            font-size: 14px;
-        }
+@section('page-script')
+    @vite([
+    'resources/assets/js/pages-auth.js'
+])
+@endsection
 
-        button {
-            width: 100%;
-            margin-top: 16px;
-            padding: 10px;
-            border: 0;
-            border-radius: 6px;
-            background: #1d4ed8;
-            color: #fff;
-            cursor: pointer;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h1>Sign in</h1>
+@section('content')
+    <div class="container-xxl">
+        <div class="authentication-wrapper authentication-basic container-p-y">
+            <div class="authentication-inner py-6">
+                <!-- Login -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Logo -->
+                        <div class="app-brand justify-content-center">
+                            <a href="{{url('/')}}" class="app-brand-link">
+                                <img src="{{ asset('assets/img/logo.png') }}"
+                                    alt="OYA Logo"
+                                    class="app-brand-logo demo"
+                                    style="height: 15rem; width: auto;">
+                            </a>
+                        </div>
+                        <!-- /Logo -->
 
-        <form method="POST" action="{{ route('login.attempt') }}">
-            @csrf
-
-            <label for="username">Username</label>
-            <input id="username" type="text" name="username" value="{{ old('username') }}" required autofocus>
-
-            <label for="password">Password</label>
-            <input id="password" type="password" name="password" required>
-
-            <label class="checkbox" for="remember">
-                <input id="remember" type="checkbox" name="remember">
-                Remember me
-            </label>
-
-            @error('username')
-                <div class="error">{{ $message }}</div>
-            @enderror
-
-            <button type="submit">Login</button>
-        </form>
+                        <!-- error message -->
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0 mx-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li style="list-style: none">{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        <!-- /error message -->
+                        <form id="formAuthentication" class="mb-4" action="{{route('auth.login')}}" method="POST">
+                            @csrf
+                            <div class="mb-6">
+                                <label for="email" class="form-label">البريد الالكتروني</label>
+                                <input type="text" class="form-control" id="email" name="email"
+                                    placeholder="example@email.com" autofocus>
+                            </div>
+                            <div class="mb-6 form-password-toggle">
+                                <label class="form-label" for="password">كلمة المرور</label>
+                                <div class="input-group input-group-merge">
+                                    <input type="password" id="password" class="form-control" name="password"
+                                        placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                                        aria-describedby="password" />
+                                    <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+                                </div>
+                            </div>
+                            <div class="my-8">
+                                <div class="d-flex justify-content-between">
+                                    <div class="form-check mb-0 ms-2">
+                                        <input class="form-check-input" type="checkbox" id="remember-me">
+                                        <label class="form-check-label" for="remember-me">
+                                            تذكرني
+                                        </label>
+                                    </div>
+                                    <a href="{{url('auth/forgot-password-basic')}}">
+                                        <p class="mb-0">هل نسيت كلمة المرور؟</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <button class="btn btn-primary d-grid w-100" type="submit">تسجيل الدخول</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- /Login -->
+            </div>
+        </div>
     </div>
-</body>
-</html>
+@endsection
