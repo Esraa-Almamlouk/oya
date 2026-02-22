@@ -9,8 +9,12 @@ $configData = Helper::appClasses();
   @if(!isset($navbarFull))
     <div class="app-brand demo">
       <a href="{{url('/')}}" class="app-brand-link">
-        <span class="app-brand-logo demo">@include('_partials.macros',["height"=>20])</span>
-        <span class="app-brand-text demo menu-text fw-bold">{{config('variables.templateName')}}</span>
+        <a href="{{url('/')}}" class="app-brand-link">
+                                <img src="{{ asset('assets/img/logo2.png') }}"
+                                    alt="OYA Logo"
+                                    class="app-brand-logo demo"
+                                    style="height: 3rem; width: auto;">
+                            </a>
       </a>
 
       <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
