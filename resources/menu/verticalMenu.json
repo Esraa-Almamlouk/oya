@@ -7,10 +7,10 @@
         "slug": "dashboard"
         },
         {
-        "url": "app/email",
+        "url": "/users",
         "name": "المستخدمين",
         "icon": "menu-icon tf-icons ti ti-users",
-        "slug": "app-email"
+        "slug": "users.index"
         },
         {
         "url": "app/chat",
