@@ -13,10 +13,10 @@
         "slug": "users.index"
         },
         {
-        "url": "app/chat",
+        "url": "/accounts",
         "name": "الحسابات",
         "icon": "menu-icon tf-icons ti ti-wallet",
-        "slug": "app-chat"
+        "slug": "accounts.index"
         },
         {
         "url": "app/calendar",
