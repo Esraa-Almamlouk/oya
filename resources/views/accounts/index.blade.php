@@ -1,4 +1,4 @@
-@extends('layouts/layoutMaster')
+﻿@extends('layouts/layoutMaster')
 
 @section('title', 'إدارة الحسابات')
 
@@ -58,9 +58,11 @@
                 </div>
             @endif
         </div>
+
         <div class="card-header border-bottom">
-                <h5 class="card-title mb-0">إدارة الحسابات</h5>
-                </div>
+            <h5 class="card-title mb-0">إدارة الحسابات</h5>
+        </div>
+
         <div class="card-header border-bottom">
             <h5 class="card-title mb-0">الفلترة</h5>
             <div class="row accounts-filter-row pt-4 g-4 justify-content-between align-items-end">
@@ -70,6 +72,7 @@
                     data-options='@json(collect($currencies)->map(fn($currency) => $currency->label() . " (" . $currency->value . ")")->values())'></div>
             </div>
         </div>
+
         <div class="card-datatable table-responsive">
             <table class="datatables-accounts table">
                 <thead class="border-top">
@@ -78,6 +81,7 @@
                         <th></th>
                         <th>اسم الحساب</th>
                         <th>التصنيف</th>
+                        <th>قيمة الحساب</th>
                         <th>العملة</th>
                         <th>المصرف</th>
                         <th>رقم الهاتف</th>
@@ -91,11 +95,16 @@
                             <td></td>
                             <td>{{ $account->name }}</td>
                             <td>{{ $account->category?->label() }}</td>
+                            <td>{{ number_format((float) $account->balance, 2) }}</td>
                             <td>{{ $account->currency?->label() }} ({{ $account->currency?->value }})</td>
                             <td>{{ $account->bank }}</td>
                             <td>{{ $account->phone }}</td>
                             <td>
                                 <div class="d-flex align-items-center account-actions">
+                                    <a href="{{ route('accounts.show', $account) }}"
+                                        class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill">
+                                            <i class="ti ti-invoice ti-md"></i>
+                                    </a>
                                     <a href="javascript:;"
                                         class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill edit-record"
                                         data-bs-toggle="offcanvas"
@@ -103,10 +112,10 @@
                                         data-id="{{ $account->id }}"
                                         data-name="{{ $account->name }}"
                                         data-category="{{ $account->category->value }}"
+                                        data-balance="{{ $account->balance }}"
                                         data-currency="{{ $account->currency->value }}"
                                         data-bank="{{ $account->bank }}"
-                                        data-phone="{{ $account->phone }}"
-                                        >
+                                        data-phone="{{ $account->phone }}">
                                             <i class="ti ti-edit ti-md"></i>
                                     </a>
                                     <a href="javascript:;"
@@ -118,11 +127,11 @@
                                 </div>
                             </td>
                         </tr>
-
                     @endforeach
                 </tbody>
             </table>
         </div>
+
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddAccount" aria-labelledby="offcanvasAddAccountLabel">
             <div class="offcanvas-header border-bottom">
                 <h5 id="offcanvasAddAccountLabel" class="offcanvas-title">إضافة حساب</h5>
@@ -170,6 +179,12 @@
                         <label class="form-label" for="add-account-bank">المصرف</label>
                         <input type="text" id="add-account-bank" class="form-control" placeholder="أدخل اسم المصرف"
                             name="bank" value="{{ old('bank') }}" required />
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="form-label" for="add-account-balance">الرصيد الافتتاحي</label>
+                        <input type="number" step="0.01" id="add-account-balance" class="form-control"
+                            placeholder="0.00 أو قيمة سالبة" name="balance" value="{{ old('balance', 0) }}" />
                     </div>
 
                     <div class="mb-6">

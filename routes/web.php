@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
+    Route::get('/accounts/{account}', [AccountController::class, 'show'])->name('accounts.show');
+    Route::post('/accounts/{account}/transactions', [TransactionController::class, 'store'])->name('accounts.transactions.store');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
     Route::put('/accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');
     Route::delete('/accounts/{account}', [AccountController::class, 'destroy'])->name('accounts.destroy');

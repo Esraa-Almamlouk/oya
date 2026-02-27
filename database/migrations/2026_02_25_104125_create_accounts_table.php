@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('currency');
             $table->string('bank');
             $table->string('phone');
+            $table->decimal('balance', 15, 2)->default(0);
             $table->timestamps();
         });
     }

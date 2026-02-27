@@ -14,10 +14,16 @@ class Account extends Model
         'currency',
         'bank',
         'phone',
+        'balance',
     ];
 
     protected $casts = [
         'category' => Category::class,
         'currency' => Currency::class,
     ];
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

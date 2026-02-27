@@ -22,17 +22,16 @@ class AccountController extends Controller
 
     public function store(Request $request)
     {
-        $rules = [
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'category' => ['required', Rule::enum(Category::class)],
             'currency' => ['required', Rule::enum(Currency::class)],
             'bank' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:20', 'unique:accounts,phone'],
-        ];
-        $messages = $this->validationMessages();
-        $attributes = $this->validationAttributes();
+            'phone' => ['required', 'digits:10', 'starts_with:091,092,093,094', 'unique:accounts,phone'],
+            'balance' => ['nullable', 'numeric'],
+        ], $this->validationMessages(), $this->validationAttributes());
 
-        $validated = $request->validate($rules, $messages, $attributes);
+        $validated['balance'] = $validated['balance'] ?? 0;
 
         Account::create($validated);
 
@@ -41,24 +40,33 @@ class AccountController extends Controller
             ->with('success', 'تمت إضافة الحساب بنجاح.');
     }
 
+    public function show(Account $account)
+    {
+        $transactions = $account->transactions()
+            ->latest('date')
+            ->latest('id')
+            ->get();
+
+        return view('accounts.show', compact('account', 'transactions'));
+    }
+
     public function update(Request $request, Account $account)
     {
-        $rules = [
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'category' => ['required', Rule::enum(Category::class)],
             'currency' => ['required', Rule::enum(Currency::class)],
             'bank' => ['required', 'string', 'max:255'],
             'phone' => [
                 'required',
-                'string',
-                'max:20',
+                'digits:10',
+                'starts_with:091,092,093,094',
                 Rule::unique('accounts', 'phone')->ignore($account->id),
             ],
-        ];
-        $messages = $this->validationMessages();
-        $attributes = $this->validationAttributes();
+            'balance' => ['nullable', 'numeric'],
+        ], $this->validationMessages(), $this->validationAttributes());
 
-        $validated = $request->validate($rules, $messages, $attributes);
+        $validated['balance'] = $validated['balance'] ?? 0;
 
         $account->update($validated);
 
@@ -84,6 +92,9 @@ class AccountController extends Controller
             'max' => 'حقل :attribute يجب ألا يتجاوز :max حرفًا.',
             'string' => 'قيمة :attribute غير صحيحة.',
             'enum' => 'قيمة :attribute غير صحيحة.',
+            'numeric' => 'قيمة :attribute يجب أن تكون رقمًا.',
+            'phone.digits' => 'رقم الهاتف يجب أن يكون 10 أرقام.',
+            'phone.starts_with' => 'رقم الهاتف يجب أن يبدأ بـ 091 أو 092 أو 093 أو 094.',
         ];
     }
 
@@ -95,6 +106,7 @@ class AccountController extends Controller
             'currency' => 'العملة',
             'bank' => 'المصرف',
             'phone' => 'رقم الهاتف',
+            'balance' => 'الرصيد الافتتاحي',
         ];
     }
 }

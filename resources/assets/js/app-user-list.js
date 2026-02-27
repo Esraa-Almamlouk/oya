@@ -60,9 +60,9 @@ $(function () {
             sLengthMenu: '_MENU_',
             search: '',
             searchPlaceholder: 'بحث',
-            info: 'عرض _START_ إلى _END_ من أصل_TOTAL_ مستخدمين',
-            infoEmpty: 'عرض 0 إلى 0 من أصل 0 مستخدمين',
-            infoFiltered: '(تمت التصفية من إجمالي _MAX_ )',
+            info: 'عرض _START_ إلى _END_ من أصل _TOTAL_ مستخدم',
+            infoEmpty: 'عرض 0 إلى 0 من أصل 0 مستخدم',
+            infoFiltered: '(تمت التصفية من إجمالي _MAX_)',
             zeroRecords: 'لم يتم العثور على سجلات مطابقة',
             emptyTable: 'لا توجد بيانات متاحة',
             paginate: {
@@ -74,7 +74,7 @@ $(function () {
         buttons: [
             {
             text: '<i class="ti ti-plus me-0 me-sm-1 ti-xs"></i><span class="d-none d-sm-inline-block">اضافة مستخدم جديد</span>',
-            className: 'add-new btn btn-primary waves-effect waves-light',
+            className: 'add-new btn btn-primary waves-effect waves-light ms-2',
             attr: {
                 'data-bs-toggle': 'offcanvas',
                 'data-bs-target': '#offcanvasAddUser'
@@ -203,77 +203,77 @@ $(function () {
         setFormCreateMode();
     }
 
-  // Delete/Archive Record (with confirmation + backend request)
-  $('.datatables-users tbody').on('click', '.delete-record', function () {
-    var row = $(this).parents('tr');
-    var deleteUrl = $(this).data('url');
-    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+    // Delete/Archive Record (with confirmation + backend request)
+    $('.datatables-users tbody').on('click', '.delete-record', function () {
+        var row = $(this).parents('tr');
+        var deleteUrl = $(this).data('url');
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-    var performDelete = function () {
-      $.ajax({
-        type: 'DELETE',
-        url: deleteUrl,
-        headers: {
-          'X-CSRF-TOKEN': csrfToken
-        },
-        success: function (response) {
-          if (dt_user) {
-            dt_user.row(row).remove().draw();
-          }
+        var performDelete = function () {
+        $.ajax({
+            type: 'DELETE',
+            url: deleteUrl,
+            headers: {
+            'X-CSRF-TOKEN': csrfToken
+            },
+            success: function (response) {
+            if (dt_user) {
+                dt_user.row(row).remove().draw();
+            }
 
-          if (typeof Swal !== 'undefined') {
-            Swal.fire({
-              icon: 'success',
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                icon: 'success',
               text: response.message || 'تمت العملية بنجاح.',
-              customClass: {
-                confirmButton: 'btn btn-success waves-effect waves-light'
-              },
-              buttonsStyling: false
-            });
-          }
-        },
-        error: function (xhr) {
+                customClass: {
+                    confirmButton: 'btn btn-success waves-effect waves-light'
+                },
+                buttonsStyling: false
+                });
+            }
+            },
+            error: function (xhr) {
           var message = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'حدث خطأ أثناء تنفيذ العملية.';
-          if (typeof Swal !== 'undefined') {
-            Swal.fire({
-              icon: 'error',
-              text: message,
-              customClass: {
-                confirmButton: 'btn btn-danger waves-effect waves-light'
-              },
-              buttonsStyling: false
-            });
-          } else {
-            alert(message);
-          }
-        }
-      });
-    };
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                icon: 'error',
+                text: message,
+                customClass: {
+                    confirmButton: 'btn btn-danger waves-effect waves-light'
+                },
+                buttonsStyling: false
+                });
+            } else {
+                alert(message);
+            }
+            }
+        });
+        };
 
-    if (typeof Swal !== 'undefined') {
-      Swal.fire({
+        if (typeof Swal !== 'undefined') {
+        Swal.fire({
         text: 'هل انت متأكد من حذف هذا المستخدم؟',
-        icon: 'warning',
-        showCancelButton: true,
+            icon: 'warning',
+            showCancelButton: true,
         confirmButtonText: 'نعم',
         cancelButtonText: 'إلغاء',
-        customClass: {
-          confirmButton: 'btn btn-warning me-3 waves-effect waves-light',
-          cancelButton: 'btn btn-label-secondary waves-effect waves-light'
-        },
-        buttonsStyling: false
-      }).then(function (result) {
-        if (result.isConfirmed || result.value) {
-          performDelete();
+            customClass: {
+            confirmButton: 'btn btn-warning me-3 waves-effect waves-light',
+            cancelButton: 'btn btn-label-secondary waves-effect waves-light'
+            },
+            buttonsStyling: false
+        }).then(function (result) {
+            if (result.isConfirmed || result.value) {
+            performDelete();
+            }
+        });
+        return;
         }
-      });
-      return;
-    }
 
     if (window.confirm('هل انت متأكد من حذف هذا المستخدم؟')) {
-      performDelete();
-    }
-  });
+        performDelete();
+        }
+    });
 
     // Filter form control to default size
     // ? setTimeout used for multilingual table initialization
@@ -292,8 +292,9 @@ $(function () {
     if (phoneMaskList) {
         phoneMaskList.forEach(function (phoneMask) {
         new Cleave(phoneMask, {
-            phone: true,
-            phoneRegionCode: 'US'
+            numericOnly: true,
+            blocks: [10],
+            delimiters: ['']
         });
         });
     }
@@ -305,14 +306,14 @@ $(function () {
         name: {
             validators: {
             notEmpty: {
-                message: 'يرجى إدخال الاسم'
+                message: 'الاسم المستخدم مطلوب'
             }
             }
         },
         email: {
             validators: {
             notEmpty: {
-                message: 'يرجى إدخال البريد الإلكتروني'
+                message: 'البريد الإلكتروني مطلوب'
             },
             emailAddress: {
                 message: 'البريد الإلكتروني غير صالح'
@@ -322,14 +323,27 @@ $(function () {
         phone: {
             validators: {
             notEmpty: {
-                message: 'يرجى إدخال رقم الهاتف'
+                message: 'رقم الهاتف مطلوب'
+            },
+            stringLength: {
+                min: 10,
+                max: 10,
+                message: 'رقم الهاتف يجب أن يكون 10 أرقام'
+            },
+            callback: {
+                message: 'رقم الهاتف يجب أن يبدأ بـ 091 أو 092 أو 093 أو 094',
+                callback: function (input) {
+                var value = String(input.value || '').trim();
+                if (value.length < 3) return true;
+                return /^(091|092|093|094)/.test(value);
+                }
             }
             }
         },
         is_active: {
             validators: {
             notEmpty: {
-                message: 'يرجى اختيار الحالة'
+                message: 'اختر الحالة'
             }
             }
         },
