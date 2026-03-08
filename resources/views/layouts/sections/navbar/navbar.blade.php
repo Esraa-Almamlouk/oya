@@ -22,9 +22,11 @@ $navbarDetached = ($navbarDetached ?? '');
             <span class="app-brand-text demo menu-text fw-bold">{{config('variables.templateName')}}</span>
           </a>
           @if(isset($menuHorizontal))
-            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-xl-none">
-              <i class="ti ti-x ti-md align-middle"></i>
-            </a>
+            <li class="nav-item navbar-search-wrapper me-2">
+              <span class="nav-link px-0 text-muted fw-normal">
+                Today: {{ \Illuminate\Support\Carbon::now()->locale('ar')->translatedFormat('l') }} - {{ now()->format('Y-m-d') }}
+              </span>
+            </li>
           @endif
         </div>
       @endif
@@ -41,31 +43,27 @@ $navbarDetached = ($navbarDetached ?? '');
       <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
 
         @if(!isset($menuHorizontal))
-        <!-- Search -->
         <div class="navbar-nav align-items-center">
           <div class="nav-item navbar-search-wrapper mb-0">
-            <a class="nav-item nav-link search-toggler d-flex align-items-center px-0" href="javascript:void(0);">
-              <i class="ti ti-search ti-md me-2 me-lg-4 ti-lg"></i>
-              <span class="d-none d-md-inline-block text-muted fw-normal">البحث</span>
-            </a>
+            <span class="nav-item nav-link d-flex align-items-center px-0 text-muted fw-normal">
+                <i class="ti ti-calendar me-2"></i>
+               {{ \Illuminate\Support\Carbon::now()->format('Y-m-d') }}
+            </span>
           </div>
         </div>
-        <!-- /Search -->
         @endif
 
        <ul class="navbar-nav flex-row align-items-center ms-auto">
           @if(isset($menuHorizontal))
-            <!-- Search -->
-            <li class="nav-item navbar-search-wrapper">
-              <a class="nav-link btn btn-text-secondary btn-icon rounded-pill search-toggler" href="javascript:void(0);">
-                <i class="ti ti-search ti-md"></i>
-              </a>
+            <li class="nav-item navbar-search-wrapper me-2">
+              <span class="nav-link px-0 text-muted fw-normal">
+                Today: {{ \Illuminate\Support\Carbon::now()->locale('ar')->translatedFormat('l') }} - {{ now()->format('Y-m-d') }}
+              </span>
             </li>
-            <!-- /Search -->
           @endif
 
           <!-- Notification -->
-          <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-2">
+          {{-- <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-2">
             <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
               <span class="position-relative">
                 <i class="ti ti-bell ti-md"></i>
@@ -257,7 +255,7 @@ $navbarDetached = ($navbarDetached ?? '');
               </li>
             </ul>
           </li>
-          <!--/ Notification -->
+          <!--/ Notification --> --}}
 
           <!-- User -->
           <li class="nav-item navbar-dropdown dropdown-user dropdown">

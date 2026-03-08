@@ -1,23 +1,23 @@
-﻿@extends('layouts/layoutMaster')
+@extends('layouts/layoutMaster')
 
-@section('title', 'معاملات الحساب')
+@section('title', 'المعاملات')
 
 @section('vendor-style')
     @vite([
-        'resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss',
-        'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss',
-        'resources/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.scss',
-        'resources/assets/vendor/libs/@form-validation/form-validation.scss',
-    ])
+    'resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss',
+    'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss',
+    'resources/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.scss',
+    'resources/assets/vendor/libs/@form-validation/form-validation.scss',
+])
 @endsection
 
 @section('vendor-script')
     @vite([
-        'resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
-        'resources/assets/vendor/libs/@form-validation/popular.js',
-        'resources/assets/vendor/libs/@form-validation/bootstrap5.js',
-        'resources/assets/vendor/libs/@form-validation/auto-focus.js',
-    ])
+    'resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
+    'resources/assets/vendor/libs/@form-validation/popular.js',
+    'resources/assets/vendor/libs/@form-validation/bootstrap5.js',
+    'resources/assets/vendor/libs/@form-validation/auto-focus.js',
+])
 @endsection
 
 @section('page-script')
@@ -26,10 +26,6 @@
 
 @section('content')
     <div class="row g-6 mb-6 account-transactions-page">
-        @php
-            $currencySymbol = $account->currency?->symbol() ?? '';
-        @endphp
-
         <div class="card">
             <div class="m-4">
                 @if ($errors->any())
@@ -50,81 +46,64 @@
 
             <div class="card-header border-bottom">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <h5 class="card-title mb-0">
-                        معاملات {{ $account->name }}
-                    </h5>
-                    <a href="{{ route('accounts.index') }}" class="btn btn-label-secondary waves-effect waves-light">
-                        الرجوع
-                    </a>
+                    <h5 class="card-title mb-0">جميع المعاملات</h5>
                 </div>
             </div>
 
-            {{-- <div class="card-header border-bottom">
+            <div class="card-header border-bottom">
                 <h5 class="card-title mb-0">الفلترة</h5>
                 <div class="row pt-4 g-4">
                     <div class="col-12 col-sm-6 col-md-4 transaction_type"></div>
-                </div>
-            </div> --}}
-
-            <div class="card-body py-4 border-bottom ">
-                <div class="row text-center gy-4">
-                    <div class="col-12 col-md-4 border-md-end">
-                        <div class="small mb-1 text-muted">الوارد</div>
-                        <div class="h4 mb-0 text-success">
-                            {{ number_format($totalIncoming, 2) }} {{ $currencySymbol }}
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 border-md-end">
-                        <div class="small mb-1 text-muted">الرصيد الصافي</div>
-                        <div class="h4 mb-0">
-                            {{ number_format($netBalance, 2) }} {{ $currencySymbol }}
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="small mb-1 text-muted">الصادر</div>
-                        <div class="h4 mb-0 text-warning">
-                            {{ number_format($totalOutgoing, 2) }} {{ $currencySymbol }}
-                        </div>
-                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 transaction_account"
+                        data-options='@json($accounts->pluck("name")->values())'></div>
+                    <div class="col-12 col-sm-6 col-md-4 transaction_currency"
+                        data-options='@json($currencies)'></div>
                 </div>
             </div>
 
-
             <div class="card-datatable table-responsive">
-                <table class="datatables-account-transactions table"
-                    data-pdf-url="{{ route('accounts.statement.pdf', $account) }}">
+                <table class="datatables-account-transactions table" data-show-add-button="0">
                     <thead class="border-top">
                         <tr>
                             <th></th>
                             <th></th>
                             <th>رقم المعاملة</th>
                             <th>التاريخ</th>
+                            <th>الحساب</th>
                             <th>الوصف</th>
-                            <th>القيمة</th>
                             <th>نوع المعاملة</th>
+                            <th>القيمة</th>
                             <th>رصيد الحساب</th>
+                            <th>العملة</th>
                             <th>مرفق</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($transactions as $transaction)
+                            @php
+                                $account = $transaction->account;
+                                $currency = $account?->currency;
+                                $currencyText = $currency ? ($currency->label() . ' (' . $currency->value . ')') : '-';
+                            @endphp
                             <tr>
                                 <td></td>
                                 <td></td>
-                                <td>{{ $transaction->reference ?? sprintf('TRX-%s-%04d', \Illuminate\Support\Carbon::parse($transaction->date)->format('Ymd'), $transaction->id) }}</td>
+                                <td>{{ $transaction->reference ?? sprintf('OYA-%s-%04d', \Illuminate\Support\Carbon::parse($transaction->date)->format('ymd'), $transaction->id) }}</td>
                                 <td>{{ $transaction->date }}</td>
+                                <td>{{ $account?->name ?? '-' }}</td>
                                 <td>{{ $transaction->description }}</td>
-                                <td class="{{ $transaction->type === 'credit' ? 'text-success' : 'text-danger' }}">
-                                    {{ number_format((float) $transaction->amount, 2) }}
-                                </td>
-                                <td>
+                                <td class="text-center">
                                     <span class="{{ $transaction->type === 'credit' ? 'text-success' : 'text-danger' }}"
                                         title="{{ $transaction->type === 'credit' ? 'إيداع' : 'سحب' }}"
                                         aria-label="{{ $transaction->type === 'credit' ? 'إيداع' : 'سحب' }}">
                                         {{ $transaction->type === 'credit' ? '▲' : '▼' }}
                                     </span>
                                 </td>
+                                <td class="{{ $transaction->type === 'credit' ? 'text-success' : 'text-danger' }}">
+                                    {{ number_format((float) $transaction->amount, 2) }}
+                                </td>
                                 <td>{{ number_format((float) $transaction->balance_after, 2) }}</td>
+                                <td>{{ $currencyText }}</td>
                                 <td>
                                     @if ($transaction->attachment)
                                         <a href="{{ asset('storage/' . $transaction->attachment) }}"
@@ -161,11 +140,22 @@
                     <form id="addTransactionForm"
                         class="row g-6"
                         method="POST"
-                        action="{{ route('accounts.transactions.store', $account) }}"
+                        action="{{ route('transactions.store') }}"
                         enctype="multipart/form-data"
                         data-has-errors="{{ $errors->any() ? '1' : '0' }}">
                         @csrf
-                        <input type="hidden" name="account_id" value="{{ $account->id }}">
+
+                        <div class="col-12">
+                            <label class="form-label" for="transactionAccount">الحساب</label>
+                            <select id="transactionAccount" name="account_id" class="form-select">
+                                <option value="" disabled {{ old('account_id') ? '' : 'selected' }}>اختر الحساب</option>
+                                @foreach ($accounts as $account)
+                                    <option value="{{ $account->id }}" {{ (string) old('account_id') === (string) $account->id ? 'selected' : '' }}>
+                                        {{ $account->name }} - {{ $account->currency?->label() }} ({{ $account->currency?->value }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
                         <div class="col-12 col-md-6">
                             <label class="form-label" for="transactionDate">التاريخ</label>

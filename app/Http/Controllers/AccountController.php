@@ -8,6 +8,9 @@ use App\Models\Account;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\Mpdf;
 
 class AccountController extends Controller
 {
@@ -42,12 +45,85 @@ class AccountController extends Controller
 
     public function show(Account $account)
     {
+        $summary = $account->transactions()
+            ->selectRaw("
+                COALESCE(SUM(CASE WHEN type = 'credit' THEN amount ELSE 0 END), 0) as total_incoming,
+                COALESCE(SUM(CASE WHEN type = 'debit' THEN amount ELSE 0 END), 0) as total_outgoing
+            ")
+            ->first();
+
+        $totalIncoming = (float) ($summary->total_incoming ?? 0);
+        $totalOutgoing = (float) ($summary->total_outgoing ?? 0);
+        $netBalance = $totalIncoming - $totalOutgoing;
+
         $transactions = $account->transactions()
             ->latest('date')
             ->latest('id')
             ->get();
 
-        return view('accounts.show', compact('account', 'transactions'));
+        return view('accounts.show', compact('account', 'transactions', 'totalIncoming', 'totalOutgoing', 'netBalance'));
+    }
+
+    public function statementPdf(Account $account)
+    {
+        @set_time_limit(180);
+        @ini_set('max_execution_time', '180');
+
+        $transactions = $account->transactions()
+            ->orderBy('date')
+            ->orderBy('id')
+            ->get();
+
+        $totalIncoming = (float) $transactions
+            ->where('type', 'credit')
+            ->sum('amount');
+
+        $totalOutgoing = (float) $transactions
+            ->where('type', 'debit')
+            ->sum('amount');
+
+        $currentBalance = (float) ($transactions->last()->balance_after ?? $account->balance ?? 0);
+
+        $html = view('accounts.statement-pdf', [
+            'account' => $account,
+            'transactions' => $transactions,
+            'totalIncoming' => $totalIncoming,
+            'totalOutgoing' => $totalOutgoing,
+            'currentBalance' => $currentBalance,
+            'generatedAt' => now(),
+        ])->render();
+
+        $config = (new ConfigVariables())->getDefaults();
+        $fontConfig = (new FontVariables())->getDefaults();
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'tempDir' => storage_path('app/mpdf'),
+            'fontDir' => array_merge($config['fontDir'], [public_path('assets/fonts')]),
+            'fontdata' => $fontConfig['fontdata'] + [
+                'tajawal' => [
+                    'R' => 'Tajawal-Regular.ttf',
+                    'B' => 'Tajawal-Bold.ttf',
+                    'useOTL' => 0xFF,
+                    'useKashida' => 0,
+                ],
+            ],
+            'default_font' => 'tajawal',
+            'autoScriptToLang' => false,
+            'autoLangToFont' => false,
+        ]);
+
+        $mpdf->SetDirectionality('rtl');
+        $mpdf->WriteHTML($html);
+
+        $filename = sprintf('account-statement-%d-%s.pdf', $account->id, now()->format('Ymd_His'));
+
+        return response($mpdf->Output($filename, 'S'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
     }
 
     public function update(Request $request, Account $account)
@@ -110,3 +186,4 @@ class AccountController extends Controller
         ];
     }
 }
+

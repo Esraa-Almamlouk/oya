@@ -22,6 +22,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::get('/accounts/{account}', [AccountController::class, 'show'])->name('accounts.show');
+    Route::get('/accounts/{account}/statement-pdf', [AccountController::class, 'statementPdf'])->name('accounts.statement.pdf');
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
     Route::post('/accounts/{account}/transactions', [TransactionController::class, 'store'])->name('accounts.transactions.store');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
     Route::put('/accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');

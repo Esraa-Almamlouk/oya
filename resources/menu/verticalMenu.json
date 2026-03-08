@@ -19,10 +19,10 @@
         "slug": "accounts.index"
         },
         {
-        "url": "app/calendar",
-        "name": "الفواتير",
+        "url": "/transactions",
+        "name": "المعاملات",
         "icon": "menu-icon tf-icons ti ti-invoice",
-        "slug": "app-calendar"
+        "slug": "transactions.index"
         }
     ]
 }

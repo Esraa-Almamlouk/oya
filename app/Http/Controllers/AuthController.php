@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
+use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,7 +38,31 @@ class AuthController extends Controller
 
     public function dashboard(): View
     {
-        return view('dashboard');
+        $usersCount = User::query()->count();
+        $accountsCount = Account::query()->count();
+        $transactionsCount = Transaction::query()->count();
+        $todayTransactionsCount = Transaction::query()
+            ->whereDate('created_at', today())
+            ->count();
+
+        $totals = Transaction::query()
+            ->selectRaw("
+                COALESCE(SUM(CASE WHEN type = 'credit' THEN amount ELSE 0 END), 0) as total_incoming,
+                COALESCE(SUM(CASE WHEN type = 'debit' THEN amount ELSE 0 END), 0) as total_outgoing
+            ")
+            ->first();
+
+        $totalIncoming = (float) ($totals->total_incoming ?? 0);
+        $totalOutgoing = (float) ($totals->total_outgoing ?? 0);
+
+        return view('dashboard', compact(
+            'usersCount',
+            'accountsCount',
+            'transactionsCount',
+            'todayTransactionsCount',
+            'totalIncoming',
+            'totalOutgoing'
+        ));
     }
 
     public function logout(Request $request): RedirectResponse

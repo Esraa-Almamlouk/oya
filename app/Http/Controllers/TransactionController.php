@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Currency;
 use App\Models\Account;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -11,9 +12,29 @@ use Illuminate\Validation\Rule;
 
 class TransactionController extends Controller
 {
-    public function store(Request $request, Account $account)
+    public function index()
+    {
+        $transactions = Transaction::query()
+            ->with('account')
+            ->latest('date')
+            ->latest('id')
+            ->get();
+
+        $accounts = Account::query()
+            ->orderBy('name')
+            ->get();
+
+        $currencies = collect(Currency::cases())
+            ->map(fn(Currency $currency) => $currency->label() . ' (' . $currency->value . ')')
+            ->values();
+
+        return view('transactions.index', compact('transactions', 'accounts', 'currencies'));
+    }
+
+    public function store(Request $request, ?Account $account = null)
     {
         $validated = $request->validate([
+            'account_id' => [$account ? 'nullable' : 'required', 'integer', 'exists:accounts,id'],
             'date' => ['required', 'date'],
             'type' => ['required', Rule::in(['credit', 'debit'])],
             'value' => ['required', 'numeric', 'min:0'],
@@ -22,10 +43,11 @@ class TransactionController extends Controller
             'attachment' => ['nullable', 'file', 'max:5120'],
         ]);
 
+        $targetAccount = $account ?? Account::query()->findOrFail((int) $validated['account_id']);
         $amount = round((float) $validated['value'] * (float) $validated['exchange_rate'], 2);
 
-        DB::transaction(function () use ($account, $validated, $amount, $request) {
-            $lockedAccount = Account::query()->lockForUpdate()->findOrFail($account->id);
+        DB::transaction(function () use ($targetAccount, $validated, $amount, $request) {
+            $lockedAccount = Account::query()->lockForUpdate()->findOrFail($targetAccount->id);
 
             $balanceBefore = (float) $lockedAccount->balance;
             $balanceAfter = $validated['type'] === 'credit'
@@ -59,7 +81,7 @@ class TransactionController extends Controller
         });
 
         return redirect()
-            ->route('accounts.show', $account)
+            ->route($account ? 'accounts.show' : 'transactions.index', $account ? $targetAccount : [])
             ->with('success', 'تمت إضافة المعاملة وتحديث رصيد الحساب بنجاح.');
     }
 }

@@ -132,7 +132,7 @@
             });
             });
 
-            api.columns(4).every(function () {
+            api.columns(5).every(function () {
             var column = this;
             var select = $('<select class="form-select text-capitalize"><option value=""> العملة </option></select>')
                 .appendTo('.account_currency')
