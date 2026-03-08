@@ -83,7 +83,7 @@
                             @php
                                 $account = $transaction->account;
                                 $currency = $account?->currency;
-                                $currencyText = $currency ? ($currency->label() . ' (' . $currency->value . ')') : '-';
+                                $currencyText = $currency ? ($currency->label() . ' (' . $currency->symbol() . ')') : '-';
                             @endphp
                             <tr>
                                 <td></td>
@@ -151,7 +151,7 @@
                                 <option value="" disabled {{ old('account_id') ? '' : 'selected' }}>اختر الحساب</option>
                                 @foreach ($accounts as $account)
                                     <option value="{{ $account->id }}" {{ (string) old('account_id') === (string) $account->id ? 'selected' : '' }}>
-                                        {{ $account->name }} - {{ $account->currency?->label() }} ({{ $account->currency?->value }})
+                                        {{ $account->name }} - {{ $account->currency?->label() }} ({{ $account->currency?->symbol() }})
                                     </option>
                                 @endforeach
                             </select>

@@ -171,7 +171,7 @@ $tablerIcons = 'file:///' . str_replace('\\', '/', resource_path('assets/vendor/
             </tr>
         </thead>
         <tbody>
-            @foreach ($transactions as $transaction)
+            @forelse ($transactions as $transaction)
                 <tr>
                     <td>{{ \Illuminate\Support\Carbon::parse($transaction->date)->format('Y-m-d') }}</td>
                     <td class="details">{{ $transaction->description }}</td>
@@ -183,7 +183,11 @@ $tablerIcons = 'file:///' . str_replace('\\', '/', resource_path('assets/vendor/
                         {{ $transaction->type === 'debit' ? number_format((float) $transaction->amount, 2) : '' }}
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="5" class="ar">لا توجد معاملات لهذا الحساب.</td>
+                </tr>
+            @endforelse
             <tr>
                 <td class="summary-label ar" colspan="3">إجمالي العمليات</td>
                 <td class="summary-value credit" colspan="1"> له {{ number_format($totalIncoming, 2) }}</td>
@@ -191,7 +195,7 @@ $tablerIcons = 'file:///' . str_replace('\\', '/', resource_path('assets/vendor/
             </tr>
             <tr>
                 <td class="summary-label ar" colspan="3">إجمالي الرصيد</td>
-                <td class="summary-value credit" colspan="2">{{ number_format($currentBalance, 2) . ' ' . $transaction->account->currency?->symbol() }}</td>
+                <td class="summary-value credit" colspan="2">{{ number_format($currentBalance, 2) . ' ' . ($account->currency?->symbol() ?? '') }}</td>
             </tr>
         </tbody>
     </table>
@@ -203,4 +207,3 @@ $tablerIcons = 'file:///' . str_replace('\\', '/', resource_path('assets/vendor/
     </table>
 </body>
 </html>
-

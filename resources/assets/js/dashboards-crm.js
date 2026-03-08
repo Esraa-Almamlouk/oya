@@ -796,68 +796,119 @@
   const projectStatusEl = document.querySelector('#projectStatusChart'),
     projectStatusConfig = {
       chart: {
-        height: 230,
+        height: 260,
         type: 'area',
-        toolbar: false
-      },
-      markers: {
-        strokeColor: 'transparent'
+        toolbar: {
+          show: false
+        }
       },
       series: [
         {
-          data: [2000, 2000, 4000, 4000, 3050, 3050, 2000, 2000, 3050, 3050, 4700, 4700, 2750, 2750, 5700, 5700]
+          name: 'ايداع',
+          data: []
+        },
+        {
+          name: 'سحب',
+          data: []
         }
       ],
       dataLabels: {
         enabled: false
       },
       grid: {
-        show: false,
+        borderColor: borderColor,
+        strokeDashArray: 6,
         padding: {
-          left: -10,
-          right: -5
+          left: 0,
+          right: 0
         }
       },
       stroke: {
-        width: 3,
-        curve: 'straight'
+        width: [3, 3],
+        curve: 'smooth'
       },
-      colors: [config.colors.warning],
+      markers: {
+        size: 3,
+        strokeWidth: 0,
+        hover: {
+          size: 5
+        }
+      },
+      colors: [config.colors.success, config.colors.danger],
       fill: {
         type: 'gradient',
         gradient: {
-          opacityFrom: 0.6,
-          opacityTo: 0.15,
-          stops: [0, 95, 100]
+          shadeIntensity: 0.8,
+          opacityFrom: 0.3,
+          opacityTo: 0.05,
+          stops: [0, 90, 100]
         }
       },
       xaxis: {
+        categories: [],
         labels: {
-          show: false
+          style: {
+            colors: labelColor,
+            fontSize: '12px',
+            fontFamily: 'Public Sans'
+          }
         },
         axisBorder: {
-          show: false
+          show: true,
+          color: borderColor
         },
         axisTicks: {
-          show: false
-        },
-        lines: {
           show: false
         }
       },
       yaxis: {
         labels: {
-          show: false
+          style: {
+            colors: labelColor,
+            fontSize: '12px',
+            fontFamily: 'Public Sans'
+          },
+          formatter: function (val) {
+            return Number(val).toFixed(0);
+          }
         },
-        min: 1000,
-        max: 6000,
-        tickAmount: 5
+        tickAmount: 4
       },
       tooltip: {
-        enabled: false
+        shared: true,
+        intersect: false,
+        y: {
+          formatter: function (val) {
+            return Number(val).toFixed(2);
+          }
+        }
+      },
+      legend: {
+        show: true,
+        position: 'top',
+        horizontalAlign: 'right',
+        labels: {
+          colors: legendColor
+        }
       }
     };
   if (typeof projectStatusEl !== undefined && projectStatusEl !== null) {
+    const labels = JSON.parse(projectStatusEl.dataset.labels || '[]');
+    const incoming = JSON.parse(projectStatusEl.dataset.incoming || '[]');
+    const outgoing = JSON.parse(projectStatusEl.dataset.outgoing || '[]');
+
+    projectStatusConfig.xaxis.categories = labels;
+    projectStatusConfig.series = [
+      {
+        name: 'ايداع',
+        data: incoming
+      },
+      {
+        name: 'سحب',
+        data: outgoing
+      }
+    ];
+
     const projectStatus = new ApexCharts(projectStatusEl, projectStatusConfig);
     projectStatus.render();
   }

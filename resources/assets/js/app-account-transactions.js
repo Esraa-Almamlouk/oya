@@ -91,8 +91,10 @@ $(function () {
       exportColumns.push(colIdx);
     }
 
-    var buttons = [
-      {
+    var buttons = [];
+
+    if (isAccountTransactionsPage) {
+      buttons.push({
         extend: 'collection',
         className: 'btn btn-label-secondary dropdown-toggle mx-4 waves-effect waves-light',
         text: '<i class="ti ti-upload me-2 ti-xs"></i>مشاركة',
@@ -336,8 +338,8 @@ $(function () {
             }
           }
         ]
-      }
-    ];
+      });
+    }
 
     if (showAddButton) {
       buttons.push({

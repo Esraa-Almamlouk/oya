@@ -40,7 +40,6 @@
             searchable: false
             }
         ],
-        order: [[2, 'desc']],
         dom:
             '<"row"' +
             '<"col-md-2"<"ms-n2"l>>' +

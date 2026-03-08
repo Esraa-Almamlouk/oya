@@ -7,7 +7,6 @@
   'resources/assets/vendor/libs/node-waves/node-waves.js',
   'resources/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js',
   'resources/assets/vendor/libs/hammer/hammer.js',
-  'resources/assets/vendor/libs/typeahead-js/typeahead.js',
   'resources/assets/vendor/js/menu.js'
 ])
 

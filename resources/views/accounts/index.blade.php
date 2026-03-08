@@ -96,7 +96,7 @@
                             <td>{{ $account->name }}</td>
                             <td>{{ $account->category?->label() }}</td>
                             <td>{{ number_format((float) $account->balance, 2) }}</td>
-                            <td>{{ $account->currency?->label() }} ({{ $account->currency?->value }})</td>
+                            <td>{{ $account->currency?->label() }} ({{ $account->currency?->symbol() }})</td>
                             <td>{{ $account->bank }}</td>
                             <td>{{ $account->phone }}</td>
                             <td>
@@ -169,7 +169,7 @@
                             <option value="" disabled {{ old('currency', '') === '' ? 'selected' : '' }}>اختر</option>
                             @foreach ($currencies as $currency)
                                 <option value="{{ $currency->value }}" {{ old('currency', '') === $currency->value ? 'selected' : '' }}>
-                                    {{ $currency->label() }} ({{ $currency->value }})
+                                    {{ $currency->label() }} ({{ $currency->symbol() }})
                                 </option>
                             @endforeach
                         </select>
