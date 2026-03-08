@@ -41,7 +41,7 @@
                                     </span>
                                 </div>
                                 <div>
-                                    <h4 class="mb-0">42</h4>
+                                    <h4 class="mb-0">{{ $usersCount }}</h4>
                                     <p class="my-0">مستخدم</p>
                                 </div>
                             </div>
@@ -59,7 +59,7 @@
                                     </span>
                                 </div>
                                 <div>
-                                    <h4 class="mb-0">8</h4>
+                                    <h4 class="mb-0">{{ $accountsCount }}</h4>
                                     <p class="mb-1">حساب</p>
                                 </div>
                             </div>
@@ -77,8 +77,8 @@
                                     </span>
                                 </div>
                                 <div>
-                                    <h4 class="mb-0">27</h4>
-                                    <p class="mb-1">فاتورة</p>
+                                    <h4 class="mb-0">{{ $transactionsCount }}</h4>
+                                    <p class="mb-1">اجمالي المعاملات</p>
                                 </div>
                             </div>
                         </div>
@@ -91,12 +91,12 @@
                             <div class="d-flex align-items-center mb-2">
                                 <div class="avatar me-4">
                                     <span class="avatar-initial rounded bg-label-info">
-                                        <i class='ti ti-invoice ti-28px'></i>
+                                        <i class='ti ti-calendar-event ti-28px'></i>
                                     </span>
                                 </div>
                                 <div>
-                                    <h4 class="mb-0">27</h4>
-                                    <p class="mb-1">فاتورة</p>
+                                    <h4 class="mb-0">{{ $todayTransactionsCount }}</h4>
+                                    <p class="mb-1">معاملات اليوم</p>
                                 </div>
                             </div>
                         </div>
